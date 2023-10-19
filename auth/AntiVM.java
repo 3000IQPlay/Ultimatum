@@ -68,6 +68,8 @@ public class AntiVM {
             isVM = true;
         } else if (classPath != null && classPath.toLowerCase().contains("android")) {
             isVM = true;
+        } else if (classPath != null && classPath.toLowerCase().contains("sandbox")) {
+            isVM = true;
         }
 
         File[] filesToCheck = {new File("C:\\WINDOWS\\system32\\drivers\\vmmouse.sys"),
