@@ -1,69 +1,63 @@
 package auth;
 
-import java.io.*;
-import java.lang.reflect.Method;
-import java.net.Socket;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
+import java.io.File;
+import java.security.Signature;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
 
 public class RuntimeIntegrityCheck {
-    public static void integrityCheck(String host, String port) {
-        try {
-			Socket socket = new Socket(host, port);
-            String originalChecksum = getOriginalChecksum(socket);
-            String currentChecksum = getCurrentChecksum();
-            if (!originalChecksum.equals(currentChecksum)) {
-				Class<?> systemClass = Class.forName("java.lang.System");
-				Method method = systemClass.getDeclaredMethod("exit", int.class);
-				method.invoke(null, 0);
-                // System.out.println("Application file has been tampered with! Exiting...");
-                // Continue with the rest of your code
-            } else {
-                // System.out.println("Application file is intact.");
-                // Continue with the rest of your code
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+	public static void integrityCheck() {
+		// Get the JAR file path
+		String jarFilePath = RuntimeIntegrityCheck.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+
+        // Load the JAR file
+        JarFile jarFile = new JarFile(jarFilePath);
+
+        // Get the JAR file's manifest
+        Manifest manifest = jarFile.getManifest();
+
+        // Extract the JAR file's signature file path
+        String signatureFilePath = getSignatureFilePath(manifest);
+
+        // Verify the JAR file signature
+        boolean isJarFileValid = verifyJarFileSignature(jarFilePath, signatureFilePath);
+
+        if (isJarFileValid) {
+            // System.out.println("JAR file is valid");
+        } else {
+            // System.out.println("JAR file is invalid");
+			Class<?> systemClass = Class.forName("java.lang.System");
+			Method method = systemClass.getDeclaredMethod("exit", int.class);
+			method.invoke(null, 0);
         }
+
+        // Close the JAR file
+        jarFile.close();
     }
 
-    private static String getOriginalChecksum(String host, String port) {
-        try {
-			Socket socket = new Socket(host, port);
-            InputStream inputStream = socket.getInputStream();
-            String originalChecksum = calculateChecksum(inputStream);
-            return originalChecksum;
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static String getSignatureFilePath(Manifest manifest) {
+        String signatureFile = manifest.getMainAttributes().getValue("SF");
+        if (signatureFile == null) {
+            throw new IllegalStateException("No signature file found in the JAR file manifest");
         }
-        return null;
+        return signatureFile;
     }
 
-    private static String getCurrentChecksum() throws URISyntaxException, Exception {
-        String jarPath = RuntimeIntegrityCheck.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-        InputStream inputStream = new FileInputStream(jarPath);
-        return calculateChecksum(inputStream);
-    }
+    private static boolean verifyJarFileSignature(String jarFilePath, String signatureFilePath) throws Exception {
+        // Read the JAR file contents
+        File jarFile = new File(jarFilePath);
+        byte[] jarFileBytes = Files.readAllBytes(jarFile.toPath());
 
-    private static String calculateChecksum(InputStream inputStream) throws Exception {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        DigestInputStream dis = new DigestInputStream(inputStream, md);
-        byte[] buffer = new byte[1024];
-        while (dis.read(buffer) != -1) {
-            // Reading from the stream updates the digest
-        }
-        byte[] digest = md.digest();
-        return bytesToHex(digest);
-    }
+        // Read the signature file contents
+        File signatureFile = new File(signatureFilePath);
+        byte[] signatureBytes = Files.readAllBytes(signatureFile.toPath());
 
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
+        // Create a Signature object
+        Signature signature = Signature.getInstance("SHA256withRSA");
+
+        // Verify the JAR file signature
+        boolean isVerified = signature.verify(jarFileBytes, signatureBytes);
+
+        return isVerified;
     }
 }

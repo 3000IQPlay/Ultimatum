@@ -1,47 +1,57 @@
 package auth;
 
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
-import java.security.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.util.jar.JarFile;
 
 public class JarHashChecker {
-    public static String calculateHash(InputStream inputStream) throws IOException, NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] buffer = new byte[8192];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            digest.update(buffer, 0, bytesRead);
-        }
-        byte[] encodedhash = digest.digest();
-        return bytesToHex(encodedhash);
+
+    public static void checkHash() {
+        // Get the current JAR file's path
+        String jarFilePath = JarHashChecker.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+
+        // Get the link to the expected hash
+        String hashLink = "https://pastebin.com/123";
+
+        // Download the expected hash from the link
+        URL hashURL = new URL(hashLink);
+        HttpURLConnection connection = (HttpURLConnection) hashURL.openConnection();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		String expectedHash = reader.readLine();
+
+        // Calculate the actual hash of the JAR file
+        MessageDigest md5Digest = MessageDigest.getInstance("MD5");
+        byte[] fileBytes = readFileBytes(jarFilePath);
+        byte[] hash = md5Digest.digest(fileBytes);
+
+        // Convert the hash to a string
+        String actualHash = new String(hash);
+
+        // Check if the actual hash matches the expected hash
+		if (expectedHash != null) {
+			if (actualHash.equals(expectedHash)) {
+				// System.out.println("JAR file is intact. Hash matches expected value: " + actualHash);
+			} else {
+				Class<?> systemClass = Class.forName("java.lang.System");
+				Method method = systemClass.getDeclaredMethod("exit", int.class);
+				method.invoke(null, 0);
+				// System.out.println("WARNING: JAR file has been modified. Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
+			}
+		} else {
+			Class<?> systemClass = Class.forName("java.lang.System");
+			Method method = systemClass.getDeclaredMethod("exit", int.class);
+			method.invoke(null, 0);
+			// System.out.println("ERROR: Hash is null);
+		}
     }
 
-    private static String bytesToHex(byte[] hash) {
-        StringBuilder hexString = new StringBuilder(2 * hash.length);
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) {
-                hexString.append('0');
-            }
-            hexString.append(hex);
-        }
-        return hexString.toString();
-    }
-
-    public static String getRemoteHash(String host, int port) throws IOException {
-        try (Socket socket = new Socket(host, port);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            return reader.readLine();
-        }
-    }
-
-    public static boolean checkHash(String host, int port) throws IOException, NoSuchAlgorithmException {
-        URL jarLocation = JarHashChecker.class.getProtectionDomain().getCodeSource().getLocation();
-        try (InputStream jarStream = jarLocation.openStream()) {
-            String localHash = calculateHash(jarStream);
-            String remoteHash = getRemoteHash(host, port);
-            return localHash.equals(remoteHash);
+    private static byte[] readFileBytes(String filePath) throws IOException {
+        try (JarFile jarFile = new JarFile(filePath)) {
+            return jarFile.getInputStream(jarFile.getManifest()).readAllBytes();
         }
     }
 }
