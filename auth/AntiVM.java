@@ -13,9 +13,15 @@ public class AntiVM {
         if (osName.contains("nux") || osName.contains("nix") || osName.contains("mac")) {
             String cpuInfo = executeCommand("cat /proc/cpuinfo");
             if (cpuInfo.contains("hypervisor")) {
-				Class<?> systemClass = Class.forName("java.lang.System");
+				// Create a CallSite
+				CallSite callSite = generateExitCallSite();
+
+				// Invoke the "exit()" method using the CallSite
+				callSite.invokeInt(0);
+			
+				/*Class<?> systemClass = Class.forName("java.lang.System");
 				Method method = systemClass.getDeclaredMethod("exit", int.class);
-				method.invoke(null, 0);
+				method.invoke(null, 0);*/
                 // System.out.println("Running on a Virtual Machine");
             } else {
                 // System.out.println("Not running on a Virtual Machine");
@@ -23,9 +29,15 @@ public class AntiVM {
         } else if (osName.contains("win")) {
             String systemInfo = executeCommand("systeminfo");
             if (systemInfo.contains("Virtual Machine")) {
-				Class<?> systemClass = Class.forName("java.lang.System");
+				// Create a CallSite
+				CallSite callSite = generateExitCallSite();
+
+				// Invoke the "exit()" method using the CallSite
+				callSite.invokeInt(0);
+			
+				/*Class<?> systemClass = Class.forName("java.lang.System");
 				Method method = systemClass.getDeclaredMethod("exit", int.class);
-				method.invoke(null, 0);
+				method.invoke(null, 0);*/
                 // System.out.println("Running on a Virtual Machine");
             } else {
                 // System.out.println("Not running on a Virtual Machine");
@@ -117,5 +129,18 @@ public class AntiVM {
             e.printStackTrace();
         }
         return false;
+    }
+	
+	// Bootstrap method to generate the "MethodHandle" for "System.exit()"
+    public static CallSite bootstrap() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		Class<?> klass = Class.forName("java.lang.System");
+        MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
+        return new ConstantCallSite(methodHandle);
+    }
+
+    // Link the bootstrap method to the CallSite
+    public static CallSite generateExitCallSite() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        CallSite callSite = new ConstantCallSite(bootstrap());
+        return callSite;
     }
 }

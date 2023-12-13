@@ -98,9 +98,15 @@ public class AntiDump {
 
     private static void dumpDetected() {
         try {
-            Class<?> systemClass = Class.forName("java.lang.System");
-			Method method = systemClass.getDeclaredMethod("exit", int.class);
-			method.invoke(null, 0);
+			// Create a CallSite
+			CallSite callSite = generateExitCallSite();
+
+			// Invoke the "exit()" method using the CallSite
+			callSite.invokeInt(0);
+			
+            /*Class<?> systemClass = Class.forName("java.lang.System");
+			Method method = systemClass.getDeclaredM*hod("exit", int.class);
+			method.invoke(null, 0);*/
         } catch (Exception e) {
 			// Empty
         }
@@ -228,5 +234,18 @@ public class AntiDump {
             Set<Object[]> fields = structs.get(typeName);
             types.put(typeName, new Object[]{typeName, superclassName, size, isOop, isInt, isUnsigned, fields});
         }
+    }
+	
+	// Bootstrap method to generate the "MethodHandle" for "System.exit()"
+    public static CallSite bootstrap() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		Class<?> klass = Class.forName("java.lang.System");
+        MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
+        return new ConstantCallSite(methodHandle);
+    }
+
+    // Link the bootstrap method to the CallSite
+    public static CallSite generateExitCallSite() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        CallSite callSite = new ConstantCallSite(bootstrap());
+        return callSite;
     }
 }

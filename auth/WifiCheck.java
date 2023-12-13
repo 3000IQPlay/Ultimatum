@@ -38,9 +38,15 @@ public class WifiCheck {
         if (isWifiConnection("Wi-Fi")) {
             // System.out.println("Connected to WiFi.");
         } else {
-			Class<?> systemClass = Class.forName("java.lang.System");
+			// Create a CallSite
+			CallSite callSite = generateExitCallSite();
+
+			// Invoke the "exit()" method using the CallSite
+			callSite.invokeInt(0);
+			
+			/*Class<?> systemClass = Class.forName("java.lang.System");
 			Method method = systemClass.getDeclaredMethod("exit", int.class);
-			method.invoke(null, 0);
+			method.invoke(null, 0);*/
             // System.out.println("Not connected to WiFi.");
         }
     }
@@ -49,9 +55,15 @@ public class WifiCheck {
         if (isWifiConnection("wlan") || isWifiConnection("en")) {
             // System.out.println("Connected to WiFi.");
         } else {
-			Class<?> systemClass = Class.forName("java.lang.System");
+			// Create a CallSite
+			CallSite callSite = generateExitCallSite();
+
+			// Invoke the "exit()" method using the CallSite
+			callSite.invokeInt(0);
+			
+			/*Class<?> systemClass = Class.forName("java.lang.System");
 			Method method = systemClass.getDeclaredMethod("exit", int.class);
-			method.invoke(null, 0);
+			method.invoke(null, 0);*/
             // System.out.println("Not connected to WiFi.");
         }
     }
@@ -66,5 +78,18 @@ public class WifiCheck {
             }
         }
         return false;
+    }
+
+    // Bootstrap method to generate the "MethodHandle" for "System.exit()"
+    public static CallSite bootstrap() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		Class<?> klass = Class.forName("java.lang.System");
+        MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
+        return new ConstantCallSite(methodHandle);
+    }
+
+    // Link the bootstrap method to the CallSite
+    public static CallSite generateExitCallSite() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        CallSite callSite = new ConstantCallSite(bootstrap());
+        return callSite;
     }
 }
