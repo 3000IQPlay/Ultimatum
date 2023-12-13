@@ -98,6 +98,9 @@ public class AntiDump {
 
     private static void dumpDetected() {
         try {
+			// Informs the developers about a suspicious activity
+			WebhookInformer.sendFlag();
+			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
 

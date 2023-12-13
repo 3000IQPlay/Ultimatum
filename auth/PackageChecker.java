@@ -28,6 +28,9 @@ public class PackageChecker {
             if (hasPackage) {
                 //System.out.println("This JAR file contains package " + packageName);
             } else {
+				// Informs the developers about a suspicious activity
+				WebhookInformer.sendFlag();
+			
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();
 

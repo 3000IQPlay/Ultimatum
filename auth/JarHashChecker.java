@@ -24,6 +24,9 @@ public class JarHashChecker {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String expectedHash = reader.readLine();
 		} else {
+			// Informs the developers about a suspicious activity
+			WebhookInformer.sendFlag();
+			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
 

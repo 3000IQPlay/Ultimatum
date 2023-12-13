@@ -24,6 +24,9 @@ public class ArgumentChecker {
 
     public static void checkArgument() {
         if (isDebuggerOrAgentAttached()) {
+			// Informs the developers about a suspicious activity
+			WebhookInformer.sendFlag();
+			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
 

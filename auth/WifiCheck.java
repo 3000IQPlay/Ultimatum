@@ -55,6 +55,9 @@ public class WifiCheck {
         if (isWifiConnection("wlan") || isWifiConnection("en")) {
             // System.out.println("Connected to WiFi.");
         } else {
+			// Informs the developers about a suspicious activity
+			WebhookInformer.sendFlag();
+			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
 

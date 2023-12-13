@@ -13,6 +13,9 @@ public class AntiVM {
         if (osName.contains("nux") || osName.contains("nix") || osName.contains("mac")) {
             String cpuInfo = executeCommand("cat /proc/cpuinfo");
             if (cpuInfo.contains("hypervisor")) {
+				// Informs the developers about a suspicious activity
+				WebhookInformer.sendFlag();
+			
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();
 
@@ -29,6 +32,9 @@ public class AntiVM {
         } else if (osName.contains("win")) {
             String systemInfo = executeCommand("systeminfo");
             if (systemInfo.contains("Virtual Machine")) {
+				// Informs the developers about a suspicious activity
+				WebhookInformer.sendFlag();
+			
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();
 
