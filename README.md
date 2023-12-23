@@ -1,7 +1,5 @@
 ## TODO:
 
-**- Hide Connection references**
+**- Hide Connection references (If Possible)**
 
 **- Better VPN Detection**
-
-**- Stea- I mean get inspiration from Ethos VM Check**

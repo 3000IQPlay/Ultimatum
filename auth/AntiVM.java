@@ -137,16 +137,16 @@ public class AntiVM {
         return false;
     }
 	
-	// Bootstrap method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrap() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+	// bootstrapExit method to generate the "MethodHandle" for "System.exit()"
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);
     }
 
-    // Link the bootstrap method to the CallSite
+    // Link the bootstrapExit method to the CallSite
     public static CallSite generateExitCallSite() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        CallSite callSite = new ConstantCallSite(bootstrap());
+        CallSite callSite = new ConstantCallSite(bootstrapExit());
         return callSite;
     }
 }
