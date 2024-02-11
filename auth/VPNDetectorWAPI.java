@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.URL;
 
-import net.vpnblocker.api.*;
+import net.vpnblocker.api.*; // https://github.com/faiqsohail/Java-VPNDetection
 
 public class VPNDetectorWAPI {
     
