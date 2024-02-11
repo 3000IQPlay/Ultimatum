@@ -54,8 +54,25 @@ public class MacUtil {
 
     public static boolean isVMMac(byte[] mac) {
         byte[][] invalidMacs;
-        if (null == mac) {
+
+        NetworkInterface network = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+        byte[] mac2 = network.getHardwareAddress();
+        
+        if (mac == null) {
             return false;
+        }
+
+        if (mac2 != null && mac2.length > 1) {
+            return (mac2[0] == 0x00 && mac2[1] == 0x05) // VMware
+                    || (mac2[0] == 0x00 && mac2[1] == 0x1C) // VMware
+                    || (mac2[0] == 0x00 && mac2[1] == 0x0C) // VMware
+                    || (mac2[0] == 0x00 && mac2[1] == 0x50) // VMware
+                    || (mac2[0] == 0x08 && mac2[1] == 0x00) // VirtualBox
+                    || (mac2[0] == 0x00 && mac2[1] == 0x1A) // VirtualBox
+                    || (mac2[0] == 0x00 && mac2[1] == 0x16) // Xen
+                    || (mac2[0] == 0x00 && mac2[1] == 0x0F) // KVM
+                    || (mac2[0] == 0x00 && mac2[1] == 0x03) // Parallels
+                    || (mac2[0] == 0x52 && mac2[1] == 0x54); // Hyper-V
         }
         for (byte[] invalid : invalidMacs = new byte[][]{{0, 5, 105}, {0, 28, 20}, {0, 12, 41}, {0, 80, 86}, {8, 0, 39}, {10, 0, 39}, {0, 3, -1}, {0, 21, 93}}) {
             if (invalid[0] != mac[0] || invalid[1] != mac[1] || invalid[2] != mac[2]) continue;
