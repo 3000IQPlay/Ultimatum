@@ -88,6 +88,12 @@ public class AntiVM {
             isVM = true;
         } else if (classPath != null && classPath.toLowerCase().contains("sandbox")) {
             isVM = true;
+        } else if (classPath != null && classPath.toLowerCase().contains("parallels")) {
+            isVM = true;
+        } else if (classPath != null && classPath.toLowerCase().contains("xen")) {
+            isVM = true;
+        } else if (classPath != null && classPath.toLowerCase().contains("kvm")) {
+            isVM = true;
         }
 
         File[] filesToCheck = {new File("C:\\WINDOWS\\system32\\drivers\\vmmouse.sys"),
