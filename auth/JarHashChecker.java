@@ -37,7 +37,7 @@ public class JarHashChecker {
 		/*Class<?> systemClass = Class.forName("java.lang.System");
 		Method method = systemClass.getDeclaredMethod("exit", int.class);
 		method.invoke(null, 0);*/
-		// System.out.println("WARNING: JAR file has been modified. Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
+		System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
 	}
 
         // Calculate the actual hash of the JAR file
@@ -51,7 +51,7 @@ public class JarHashChecker {
         // Check if the actual hash matches the expected hash
 	if (expectedHash != null) {
 		if (actualHash.equals(expectedHash)) {
-			// System.out.println("JAR file is intact. Hash matches expected value: " + actualHash);
+			System.out.println("DEV MODE: JAR file is intact. Hash matches expected value: " + actualHash);
 		} else {
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
@@ -62,7 +62,7 @@ public class JarHashChecker {
 			/*Class<?> systemClass = Class.forName("java.lang.System");
 			Method method = systemClass.getDeclaredMethod("exit", int.class);
 			method.invoke(null, 0);*/
-			// System.out.println("WARNING: JAR file has been modified. Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
+			System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
 		}
 	} else {
 		// Create a CallSite
@@ -74,7 +74,7 @@ public class JarHashChecker {
 		/*Class<?> systemClass = Class.forName("java.lang.System");
 		Method method = systemClass.getDeclaredMethod("exit", int.class);
 		method.invoke(null, 0);*/
-		// System.out.println("ERROR: Hash is null);
+		System.out.println("DEV MODE: Hash is null");
 	}
     }
 
