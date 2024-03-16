@@ -6,6 +6,6 @@
 
 ## How to use .class
 
-**AESEncryptor - **java -cp . <ClassPaht> <TextForEncryption> <EncryptionKey>
+**AESEncryptor -** java -cp . <ClassPaht> <TextForEncryption> <EncryptionKey>
 
-**AESDecryptor - **java -cp . <ClassPaht> <TextForDecryption> <DecryptionKey>
+**AESDecryptor -** java -cp . <ClassPaht> <TextForDecryption> <DecryptionKey>
