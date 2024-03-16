@@ -4,4 +4,8 @@
 
 **- Better VPN Detection**
 
-**- Encryptor/Decryptor for values on the pastebin**
+## How to use .class
+
+**AESEncryptor - **java -cp . <ClassPaht> <TextForEncryption> <EncryptionKey>
+
+**AESDecryptor - **java -cp . <ClassPaht> <TextForDecryption> <DecryptionKey>

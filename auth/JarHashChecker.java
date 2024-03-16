@@ -1,5 +1,6 @@
 package auth;
 
+import auth.AESEncryptor;
 import auth.WebhookInformer;
 
 import java.io.BufferedReader;
@@ -17,15 +18,15 @@ public class JarHashChecker {
         // Get the current JAR file's path
         String jarFilePath = JarHashChecker.class.getProtectionDomain().getCodeSource().getLocation().getFile();
 
-        // Get the link to the expected hash
+        // Get the link to the expected encrypted hash
         String hashLink = "https://pastebin.com/123"; // Replace with secure storage
 
-        // Download the expected hash from the link
+        // Download the expected encrypted hash from the link
 		if (hashLink != null && hashLink.equals("https://pastebin.com/123")) {
 			URL hashURL = new URL(hashLink);
      		HttpURLConnection connection = (HttpURLConnection) hashURL.openConnection();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String expectedHash = reader.readLine();
+			String expectedEncryptedHash = reader.readLine();
 		} else {
 			// System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
 		
@@ -50,16 +51,20 @@ public class JarHashChecker {
 
         // Convert the hash to a string
         String actualHash = new String(hash);
+		
+		// Encryp actual hash so it's harder to identify what it is for
+		String key = "24-char-key";
+		String actualEncryptedHash = AESEncryptor.encrypt(actualHash, key);
 
         // Check if the actual hash matches the expected hash
-		if (expectedHash != null) {
-			if (actualHash.equals(expectedHash)) {
-				// System.out.println("DEV MODE: JAR file is intact. Hash matches expected value: " + actualHash);
+		if (expectedEncryptedHash != null) {
+			if (actualEncryptedHash.equals(expectedEncryptedHash)) {
+				// System.out.println("DEV MODE: JAR file is intact. Hash matches expected value: " + actualEncryptedHash);
 			} else {
-				// System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
+				// System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedEncryptedHash + ", Actual hash: " + actualEncryptedHash);
 				
 				// Informs the developers about a suspicious activity
-				WebhookInformer.sendFlag("- Different Jar Hash has been detected -> " + expectedHash);
+				WebhookInformer.sendFlag("- Different Jar Hash has been detected (Encrypted) -> Expected: " + expectedEncryptedHash + " Actual: " + actualEncryptedHash);
 		
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();

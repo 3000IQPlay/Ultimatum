@@ -1,5 +1,6 @@
 package auth;
 
+import auth.AESEncryptor;
 import auth.WebhookInformer;
 
 import java.io.IOException;
@@ -18,8 +19,9 @@ public class JarSizeChecker {
 				URL url = new URL(sizeLink);
 				URLConnection connection = url.openConnection();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String jarSizeString = reader.readLine();
-				int targetJarSize = Integer.parseInt(jarSizeString);
+				String encryptedJarSize = reader.readLine();
+				
+				int targetEncryptedJarSize = Integer.parseInt(encryptedJarSize);
 			} else {
 				// System.out.println("DEV MODE: Size links do not match -> " + sizeLink);
 				
@@ -41,14 +43,18 @@ public class JarSizeChecker {
 			URL currentJar = JarSizeChecker.class.getProtectionDomain().getCodeSource().getLocation();
 			long currentJarSizeInBytes = currentJar.openConnection().getContentLength();
 			int currentJarSizeInKilobytes = (int) (currentJarSizeInBytes / 1024);
+			
+			// Encrypt Jar Size for better security
+			String KEY = "24-char-string";
+			String currentEncryptedJarSize = AESEncryptor.encrypt(currentJarSizeInKilobytes.toString(), KEY);
 
 			// Check if Size is null and after Compare the sizes
 			if (targetJarSize != null) {
-				if (targetJarSize != currentJarSizeInKilobytes) {
+				if (targetEncryptedJarSize != currentEncryptedJarSize) {
 					// System.out.println("DEV MODE: JAR size mismatch (current: " + currentJarSizeInKilobytes + " KB, target: " + targetJarSize + " KB)");
 				
 					// Informs the developers about a suspicious activity
-					WebhookInformer.sendFlag("- Different Jar Size has been detected -> " + currentJarSizeInKilobytes.toString());
+					WebhookInformer.sendFlag("- Different Jar Size has been detected (Encrypted) -> Expected: " + targetEncryptedJarSize + " Actual: " + currentEncryptedJarSize);
 		
 					// Create a CallSite
 					CallSite callSite = generateExitCallSite();
