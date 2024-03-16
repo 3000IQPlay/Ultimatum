@@ -27,8 +27,10 @@ public class RuntimeIntegrityCheck {
         if (isJarFileValid) {
             // System.out.println("JAR file is valid");
         } else {
+			// System.out.println("DEV MODE: Jar file is not valid.");
+			
 			// Informs the developers about a suspicious activity
-			WebhookInformer.sendFlag();
+			WebhookInformer.sendFlag("- Jar file is not valid (Signature).");
 			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();

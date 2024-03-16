@@ -21,42 +21,17 @@ public class JarHashChecker {
         String hashLink = "https://pastebin.com/123"; // Replace with secure storage
 
         // Download the expected hash from the link
-	if (hashLink != null && hashLink.equals("https://pastebin.com/123")) {
-		URL hashURL = new URL(hashLink);
-      		HttpURLConnection connection = (HttpURLConnection) hashURL.openConnection();
-        	BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        	String expectedHash = reader.readLine();
-	} else {
-		System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
-		
-		// Informs the developers about a suspicious activity
-		WebhookInformer.sendFlag();
-			
-		// Create a CallSite
-		CallSite callSite = generateExitCallSite();
-
-		// Invoke the "exit()" method using the CallSite
-		callSite.invokeInt(0);
-				
-		/*Class<?> systemClass = Class.forName("java.lang.System");
-		Method method = systemClass.getDeclaredMethod("exit", int.class);
-		method.invoke(null, 0);*/
-	}
-
-        // Calculate the actual hash of the JAR file
-        MessageDigest sha256Digest = MessageDigest.getInstance("SHA-256");
-        byte[] fileBytes = readFileBytes(jarFilePath);
-        byte[] hash = sha256Digest.digest(fileBytes);
-
-        // Convert the hash to a string
-        String actualHash = new String(hash);
-
-        // Check if the actual hash matches the expected hash
-	if (expectedHash != null) {
-		if (actualHash.equals(expectedHash)) {
-			System.out.println("DEV MODE: JAR file is intact. Hash matches expected value: " + actualHash);
+		if (hashLink != null && hashLink.equals("https://pastebin.com/123")) {
+			URL hashURL = new URL(hashLink);
+     		HttpURLConnection connection = (HttpURLConnection) hashURL.openConnection();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			String expectedHash = reader.readLine();
 		} else {
-			System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
+			// System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
+		
+			// Informs the developers about a suspicious activity
+			WebhookInformer.sendFlag("- Different JarHash URL has been detected -> " + hashLink);
+			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
 
@@ -67,18 +42,51 @@ public class JarHashChecker {
 			Method method = systemClass.getDeclaredMethod("exit", int.class);
 			method.invoke(null, 0);*/
 		}
-	} else {
-		// Create a CallSite
-		CallSite callSite = generateExitCallSite();
 
-		// Invoke the "exit()" method using the CallSite
-		callSite.invokeInt(0);
+        // Calculate the actual hash of the JAR file
+        MessageDigest sha256Digest = MessageDigest.getInstance("SHA-256");
+        byte[] fileBytes = readFileBytes(jarFilePath);
+        byte[] hash = sha256Digest.digest(fileBytes);
+
+        // Convert the hash to a string
+        String actualHash = new String(hash);
+
+        // Check if the actual hash matches the expected hash
+		if (expectedHash != null) {
+			if (actualHash.equals(expectedHash)) {
+				// System.out.println("DEV MODE: JAR file is intact. Hash matches expected value: " + actualHash);
+			} else {
+				// System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
+				
+				// Informs the developers about a suspicious activity
+				WebhookInformer.sendFlag("- Different Jar Hash has been detected -> " + expectedHash);
+		
+				// Create a CallSite
+				CallSite callSite = generateExitCallSite();
+
+				// Invoke the "exit()" method using the CallSite
+				callSite.invokeInt(0);
+				
+				/*Class<?> systemClass = Class.forName("java.lang.System");
+				Method method = systemClass.getDeclaredMethod("exit", int.class);
+				method.invoke(null, 0);*/
+			}
+		} else {
+			// System.out.println("DEV MODE: Hash is null");
 			
-		/*Class<?> systemClass = Class.forName("java.lang.System");
-		Method method = systemClass.getDeclaredMethod("exit", int.class);
-		method.invoke(null, 0);*/
-		System.out.println("DEV MODE: Hash is null");
-	}
+			// Informs the developers about a suspicious activity
+			WebhookInformer.sendFlag("- Expected Jar Hash is null.");
+		
+			// Create a CallSite
+			CallSite callSite = generateExitCallSite();
+
+			// Invoke the "exit()" method using the CallSite
+			callSite.invokeInt(0);
+			
+			/*Class<?> systemClass = Class.forName("java.lang.System");
+			Method method = systemClass.getDeclaredMethod("exit", int.class);
+			method.invoke(null, 0);*/
+		}
     }
 
     private static byte[] readFileBytes(String filePath) throws IOException {

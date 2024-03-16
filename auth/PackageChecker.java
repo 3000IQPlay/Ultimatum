@@ -26,14 +26,29 @@ public class PackageChecker {
                     break;
                 }
             }
+			
+			if (packageName != null || packageName.equals("me.example.com")) {
+				// Empty
+			} else {
+				// System.out.println("DEV MODE: Different Package Name has been detected -> " + packageName);
+				
+				// Informs the developers about a suspicious activity
+				WebhookInformer.sendFlag("- Different Package Name has been detected -> " + packageName);
+			
+				// Create a CallSite
+				CallSite callSite = generateExitCallSite();
+
+				// Invoke the "exit()" method using the CallSite
+				callSite.invokeInt(0);
+			}
 
             if (hasPackage) {
-                System.out.println("DEV MODE: This JAR file contains package " + packageName);
+                // System.out.println("DEV MODE: This JAR file contains package " + packageName);
             } else {
 				System.out.println("DEV MODE: This JAR file does not contain package " + packageName);
 				
 				// Informs the developers about a suspicious activity
-				WebhookInformer.sendFlag();
+				WebhookInformer.sendFlag("- Package " + packageName + " has been removed/changed");
 			
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();

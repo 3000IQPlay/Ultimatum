@@ -46,7 +46,7 @@ public class AntiDump {
                 dumpDetected();
             }
             if (isClassLoaded("sun.instrument.InstrumentationImpl")) {
-                System.out.println("Found sun.instrument.InstrumentationImpl!");
+                // System.out.println("Found sun.instrument.InstrumentationImpl!");
                 dumpDetected();
             }
             byte[] bytes = createDummyClass("dummy/class/path/MaliciousClassFilter");
@@ -100,8 +100,10 @@ public class AntiDump {
 
     private static void dumpDetected() {
         try {
+			// System.out.println("DEV MODE: Dumper has been detected!");
+			
 			// Informs the developers about a suspicious activity
-			WebhookInformer.sendFlag();
+			WebhookInformer.sendFlag("- Dumper has been detected.");
 			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();

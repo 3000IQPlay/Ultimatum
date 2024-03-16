@@ -13,10 +13,10 @@ public class AntiClassCall {
 				try {
 					Thread.sleep(Integer.MAX_VALUE);
 				} catch (InterruptedException e) {
-					System.out.println("DEV MODE: AntiClassCall has been called in a non whitelisted Class");
+					// System.out.println("DEV MODE: " + AntiClassCall.class.getName().toString() + " has been called in a non whitelisted Class");
 					
 					// Informs the developers about a suspicious activity
-					WebhookInformer.sendFlag();
+					WebhookInformer.sendFlag("- " + AntiClassCall.class.getName().toString() + " has been called in a non-whitelisted Class.");
 			
 					// Create a CallSite
 					CallSite callSite = generateExitCallSite();

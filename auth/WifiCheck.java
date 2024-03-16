@@ -36,9 +36,9 @@ public class WifiCheck {
 
     public static void checkWifiConnectionWindows() throws SocketException {
         if (isWifiConnection("Wi-Fi")) {
-            System.out.println("DEV MODE: Connected to WiFi.");
+            // System.out.println("DEV MODE: Connected to WiFi.");
         } else {
-			System.out.println("DEV MODE: Not Connected to WiFi.");
+			// System.out.println("DEV MODE: Not Connected to WiFi.");
 			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
@@ -55,9 +55,9 @@ public class WifiCheck {
 
     public static void checkWifiConnectionUnix() throws SocketException {
         if (isWifiConnection("wlan") || isWifiConnection("en")) {
-            System.out.println("DEV MODE: Connected to WiFi.");
+            // System.out.println("DEV MODE: Connected to WiFi.");
         } else {
-			System.out.println("DEV MODE: Not Connected to WiFi.");
+			// System.out.println("DEV MODE: Not Connected to WiFi.");
 			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();

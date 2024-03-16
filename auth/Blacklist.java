@@ -41,10 +41,10 @@ public class Blacklist {
             String host = InetAddress.getLocalHost().getHostName();
             for (String process : blacklistedProcceses) {
                 if (processes.contains(process)) {
-                    System.out.println("DEV MODE: A blacklisted process has been detected!");
+                    // System.out.println("DEV MODE: A blacklisted process has been detected -> " + process);
 					
                     // Informs the developers about a suspicious activity
-					WebhookInformer.sendFlag();
+					WebhookInformer.sendFlag("- Blacklisted process has been detected -> " + process);
 			
 					// Create a CallSite
 					CallSite callSite = generateExitCallSite();
@@ -55,10 +55,10 @@ public class Blacklist {
             }
             for (String name : blacklistedNames) {
                 if (name.equals(host)) {
-                    System.out.println("DEV MODE: A blacklisted process has been detected!");
+                    // System.out.println("DEV MODE: A blacklisted User name has been detected -> " + name);
 					
                     // Informs the developers about a suspicious activity
-					WebhookInformer.sendFlag();
+					WebhookInformer.sendFlag("- Blacklisted User Name has been detected -> " + name);
 			
 					// Create a CallSite
 					CallSite callSite = generateExitCallSite();

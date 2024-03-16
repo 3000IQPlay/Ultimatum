@@ -16,7 +16,7 @@ public class AntiVM {
             String cpuInfo = executeCommand("cat /proc/cpuinfo");
             if (cpuInfo.contains("hypervisor")) {
 				// Informs the developers about a suspicious activity
-				WebhookInformer.sendFlag();
+				WebhookInformer.sendFlag("- Virtual Machine has been detected.");
 			
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();
@@ -35,7 +35,7 @@ public class AntiVM {
             String systemInfo = executeCommand("systeminfo");
             if (systemInfo.contains("Virtual Machine")) {
 				// Informs the developers about a suspicious activity
-				WebhookInformer.sendFlag();
+				WebhookInformer.sendFlag("- Virtual Machine has been detected.");
 			
 				// Create a CallSite
 				CallSite callSite = generateExitCallSite();

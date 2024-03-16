@@ -70,8 +70,10 @@ public class VPNDetector {
 	
 	public static void isVPN() {
 		if (isAvastVPN || isCloudFlareVPN) {
+			// System.out.println("DEV MODE: VPN has been detected!");
+			
 			// Informs the developers about a suspicious activity
-			WebhookInformer.sendFlag();
+			WebhookInformer.sendFlag("- VPN has been detected.");
 			
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
