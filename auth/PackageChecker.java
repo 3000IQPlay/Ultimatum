@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -26,8 +28,10 @@ public class PackageChecker {
             }
 
             if (hasPackage) {
-                //System.out.println("This JAR file contains package " + packageName);
+                System.out.println("DEV MODE: This JAR file contains package " + packageName);
             } else {
+				System.out.println("DEV MODE: This JAR file does not contain package " + packageName);
+				
 				// Informs the developers about a suspicious activity
 				WebhookInformer.sendFlag();
 			
@@ -36,8 +40,6 @@ public class PackageChecker {
 
 				// Invoke the "exit()" method using the CallSite
 				callSite.invokeInt(0);
-				
-                //System.out.println("This JAR file does not contain package " + packageName);
             }
         } catch (IOException e) {
             //System.out.println("Error checking JAR file: " + e.getMessage());

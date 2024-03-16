@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +27,8 @@ public class JarHashChecker {
         	BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         	String expectedHash = reader.readLine();
 	} else {
+		System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
+		
 		// Informs the developers about a suspicious activity
 		WebhookInformer.sendFlag();
 			
@@ -37,7 +41,6 @@ public class JarHashChecker {
 		/*Class<?> systemClass = Class.forName("java.lang.System");
 		Method method = systemClass.getDeclaredMethod("exit", int.class);
 		method.invoke(null, 0);*/
-		System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
 	}
 
         // Calculate the actual hash of the JAR file
@@ -53,6 +56,7 @@ public class JarHashChecker {
 		if (actualHash.equals(expectedHash)) {
 			System.out.println("DEV MODE: JAR file is intact. Hash matches expected value: " + actualHash);
 		} else {
+			System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
 			// Create a CallSite
 			CallSite callSite = generateExitCallSite();
 
@@ -62,7 +66,6 @@ public class JarHashChecker {
 			/*Class<?> systemClass = Class.forName("java.lang.System");
 			Method method = systemClass.getDeclaredMethod("exit", int.class);
 			method.invoke(null, 0);*/
-			System.out.println("DEV MODE: JAR file has been modified (Hashes don't match). Expected hash: " + expectedHash + ", Actual hash: " + actualHash);
 		}
 	} else {
 		// Create a CallSite

@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
@@ -7,7 +9,7 @@ import java.util.List;
 
 public class ArgumentChecker {
 	private static final String[] naughtyFlags = {
-	    "-agentlib:jdwp",
+			"-agentlib:jdwp",
             "-XBootclasspath",
             "-javaagent",
             "-Xdebug",
@@ -31,7 +33,7 @@ public class ArgumentChecker {
 			// Invoke the "exit()" method using the CallSite
 			callSite.invokeInt(0);
 			
-      			System.out.println("DEV MODE: Array modifications have been detected");
+      			System.out.println("DEV MODE: Array modifications have been detected!");
     		}
   	}
         if (isDebuggerOrAgentAttached() || naughtyFlags.length != 12 || ) {
@@ -47,9 +49,9 @@ public class ArgumentChecker {
 		/*Class<?> systemClass = Class.forName("java.lang.System");
 		Method method = systemClass.getDeclaredMethod("exit", int.class);
 		method.invoke(null, 0);*/
-                System.out.println("DEV MODE: Debugger or Agent detected! Exiting...");
+                System.out.println("DEV MODE: Debugger or Agent detected!");
         } else {
-             System.out.println("DEV MODE: No debugger or agent detected.");
+             System.out.println("DEV MODE: No debugger or Agent detected.");
         }
     }
 

@@ -1,4 +1,4 @@
-package auth.trillium;
+package auth;
 
 import auth.WebhookUtil;
 import net.minecraft.client.Minecraft;

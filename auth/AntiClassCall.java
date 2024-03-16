@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -11,6 +13,8 @@ public class AntiClassCall {
 				try {
 					Thread.sleep(Integer.MAX_VALUE);
 				} catch (InterruptedException e) {
+					System.out.println("DEV MODE: AntiClassCall has been called in a non whitelisted Class");
+					
 					// Informs the developers about a suspicious activity
 					WebhookInformer.sendFlag();
 			

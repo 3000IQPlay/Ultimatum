@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import java.net.*;
 import java.util.Enumeration;
 import java.util.regex.*;

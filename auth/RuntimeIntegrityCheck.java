@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import java.io.File;
 import java.security.Signature;
 import java.util.jar.Manifest;

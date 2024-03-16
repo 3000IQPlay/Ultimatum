@@ -15,8 +15,12 @@ public class SelfDelete {
     public static void selfDestructJARFile() throws Exception {
 	String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
+			System.out.println("DEV MODE: Self Destruct has been activated");
+			
             SelfDelete.selfDestructWindowsJARFile();
         } else {
+			System.out.println("DEV MODE: Self Destruct has been activated");
+			
             File directoryFilePath = SelfDelete.getCurrentJarPath();
             Files.delete(directoryFilePath.toPath());
         }

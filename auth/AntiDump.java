@@ -1,5 +1,7 @@
 package auth;
 
+import auth.WebhookInformer;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 import sun.misc.Unsafe;
