@@ -2,8 +2,14 @@ package auth;
 
 import auth.WebhookInformer;
 
+import java.lang.invoke.CallSite;
+import java.lang.invoke.ConstantCallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.*;
 
 public class VPNDetector {
@@ -41,9 +47,9 @@ public class VPNDetector {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface interface1 = interfaces.nextElement();
-                List<InetAddress> addresses = interface1.getInetAddresses();
+                List<InetAddress> addresses = (List<InetAddress>) interface1.getInetAddresses();
                 for (InetAddress address : addresses) {
-                    if (address.isUp() && !address.isLoopbackAddress()) {
+                    if (address.isMulticastAddress() && !address.isLoopbackAddress()) {
                         String interfaceName = interface1.getName();
                         String interfaceType = interface1.getDisplayName();
                         String addressString = address.getHostAddress();
@@ -68,8 +74,8 @@ public class VPNDetector {
 		return false;
 	}
 	
-	public static void isVPN() {
-		if (isAvastVPN || isCloudFlareVPN) {
+	public static void isVPN() throws SocketException, NoSuchMethodException, IllegalAccessException {
+		if (isAvastVPN() || isCloudFlareVPN()) {
 			// System.out.println("DEV MODE: VPN has been detected!");
 			
 			// Informs the developers about a suspicious activity
@@ -84,7 +90,7 @@ public class VPNDetector {
 	}
 	
 	// bootstrapExit method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);

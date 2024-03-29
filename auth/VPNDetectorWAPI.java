@@ -21,7 +21,7 @@ public class VPNDetectorWAPI {
         return ip;
     }
 
-    public Boolean isVPN() {
+    public Boolean isWVPN() {
         String ipToLookup = getPublicIP();
         try {
             Boolean isHostingorVPN = new VPNDetection().getResponse(ipToLookup).hostip;

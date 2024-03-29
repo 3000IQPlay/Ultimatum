@@ -6,11 +6,16 @@ import auth.WebhookInformer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarFile;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.ConstantCallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 public class JarHashChecker {
 
@@ -20,13 +25,14 @@ public class JarHashChecker {
 
         // Get the link to the expected encrypted hash
         String hashLink = "https://pastebin.com/123"; // Replace with secure storage
+		String expectedEncryptedHash = null;
 
         // Download the expected encrypted hash from the link
 		if (hashLink != null && hashLink.equals("https://pastebin.com/123")) {
 			URL hashURL = new URL(hashLink);
      		HttpURLConnection connection = (HttpURLConnection) hashURL.openConnection();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String expectedEncryptedHash = reader.readLine();
+			expectedEncryptedHash = reader.readLine();
 		} else {
 			// System.out.println("DEV MODE: String, containing the URL to the hash, doesn't match");
 		
@@ -101,7 +107,7 @@ public class JarHashChecker {
     }
 	
 	// bootstrapExit method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);

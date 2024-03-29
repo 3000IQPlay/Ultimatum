@@ -3,13 +3,17 @@ package auth;
 import auth.WebhookInformer;
 
 import java.io.IOException;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.ConstantCallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class AntiClassCall {
     public AntiClassCall() throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException, InterruptedException {
 		if (!Objects.requireNonNull(getCallerClassName()).contains(AntiClassCall.class.getName())) { // Whitelist it self, calling AntiClassCall in AntiClassCall won't Crash the Program.
-			if (!Objects.equals(getCallerClassName(), Main.class.getName())) { // If the class calling THIS class AnitClassCall isn't EITHER Main or AnitClassCall class, Crash.
+			if (!Objects.equals(getCallerClassName(), EXAMPLECLASS.class.getName())) { // If the class calling THIS class AnitClassCall isn't EITHER Main or AnitClassCall class, Crash.
 				try {
 					Thread.sleep(Integer.MAX_VALUE);
 				} catch (InterruptedException e) {
@@ -44,7 +48,7 @@ public class AntiClassCall {
 	}
 
     // bootstrapExit method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);

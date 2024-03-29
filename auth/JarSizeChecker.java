@@ -3,8 +3,15 @@ package auth;
 import auth.AESEncryptor;
 import auth.WebhookInformer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.ConstantCallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -13,15 +20,17 @@ public class JarSizeChecker {
 		try {
 			// Get the link to the expected size
 			String sizeLink = "https://pastebin.com/123";
-			
+			String encryptedJarSize = null;
+			int targetEncryptedJarSize = 0;
+
 			// Read the expected size from URL
 			if (sizeLink != null && sizeLink.equals("https://pastebin.com/123")) {
 				URL url = new URL(sizeLink);
 				URLConnection connection = url.openConnection();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String encryptedJarSize = reader.readLine();
+				encryptedJarSize = reader.readLine();
 				
-				int targetEncryptedJarSize = Integer.parseInt(encryptedJarSize);
+				targetEncryptedJarSize = Integer.parseInt(encryptedJarSize);
 			} else {
 				// System.out.println("DEV MODE: Size links do not match -> " + sizeLink);
 				
@@ -49,8 +58,8 @@ public class JarSizeChecker {
 			String currentEncryptedJarSize = AESEncryptor.encrypt(currentJarSizeInKilobytes.toString(), KEY);
 
 			// Check if Size is null and after Compare the sizes
-			if (targetJarSize != null) {
-				if (targetEncryptedJarSize != currentEncryptedJarSize) {
+			if (encryptedJarSize != null) {
+				if (targetEncryptedJarSize.toString() != currentEncryptedJarSize) {
 					// System.out.println("DEV MODE: JAR size mismatch (current: " + currentJarSizeInKilobytes + " KB, target: " + targetJarSize + " KB)");
 				
 					// Informs the developers about a suspicious activity
@@ -86,7 +95,7 @@ public class JarSizeChecker {
     }
 	
     // bootstrapExit method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);

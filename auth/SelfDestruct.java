@@ -4,10 +4,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.net.URISyntaxException;
 
-public class SelfDelete {
+public class SelfDestruct {
 
     private static void selfDestructWindowsJARFile() throws Exception {
-        String currentJARFilePath = SelfDelete.getCurrentJarPath().toString();
+        String currentJARFilePath = SelfDestruct.getCurrentJarPath().toString();
         Runtime runtime = Runtime.getRuntime();
         runtime.exec("cmd /c ping localhost -n 2 > nul && del \"" + currentJARFilePath + "\"");
     }
@@ -16,17 +16,17 @@ public class SelfDelete {
 	String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
 			// System.out.println("DEV MODE: Self Destruct has been activated");
-			
-            SelfDelete.selfDestructWindowsJARFile();
+
+            SelfDestruct.selfDestructWindowsJARFile();
         } else {
 			// System.out.println("DEV MODE: Self Destruct has been activated");
 			
-            File directoryFilePath = SelfDelete.getCurrentJarPath();
+            File directoryFilePath = SelfDestruct.getCurrentJarPath();
             Files.delete(directoryFilePath.toPath());
         }
     }
 	
     public static File getCurrentJarPath() throws URISyntaxException {
-        return new File(SelfDelete.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        return new File(SelfDestruct.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
     }
 }

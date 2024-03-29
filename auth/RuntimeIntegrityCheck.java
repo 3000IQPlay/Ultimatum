@@ -3,12 +3,19 @@ package auth;
 import auth.WebhookInformer;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.ConstantCallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.security.Signature;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 
 public class RuntimeIntegrityCheck {
-	public static void integrityCheck() {
+	public static void integrityCheck() throws Exception {
 		// Get the JAR file path
 		String jarFilePath = RuntimeIntegrityCheck.class.getProtectionDomain().getCodeSource().getLocation().getFile();
 
@@ -62,27 +69,27 @@ public class RuntimeIntegrityCheck {
         byte[] jarFileBytes = Files.readAllBytes(jarFile.toPath());
 
         // Read the signature file contents
-        File signatureFile = new File(signatureFilePath);
-        byte[] signatureBytes = Files.readAllBytes(signatureFile.toPath());
+        //File signatureFile = new File(signatureFilePath);
+        //byte[] signatureBytes = Files.readAllBytes(signatureFile.toPath());
 
         // Create a Signature object
         Signature signature = Signature.getInstance("SHA256withRSA");
 
         // Verify the JAR file signature
-        boolean isVerified = signature.verify(jarFileBytes, signatureBytes);
+        boolean isVerified = signature.verify(jarFileBytes);
 
         return isVerified;
     }
 	
 	// bootstrapExit method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);
     }
 
     // Link the bootstrapExit method to the CallSite
-    public static CallSite generateExitCallSite() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite generateExitCallSite() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
         CallSite callSite = new ConstantCallSite(bootstrapExit());
         return callSite;
     }

@@ -1,4 +1,4 @@
-package dev._3000IQPlay.trillium.protect;
+package auth;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.Color;

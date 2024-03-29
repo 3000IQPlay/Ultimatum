@@ -1,5 +1,10 @@
 package auth;
 
+import java.lang.invoke.CallSite;
+import java.lang.invoke.ConstantCallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -29,12 +34,12 @@ public class WifiCheck {
             } else {
                 // System.out.println("Unsupported operating system.");
             }
-        } catch (SocketException e) {
+        } catch (SocketException | NoSuchMethodException | IllegalAccessException e) {
             // System.out.println("Error getting network interfaces: " + e.getMessage());
         }
     }
 
-    public static void checkWifiConnectionWindows() throws SocketException {
+    public static void checkWifiConnectionWindows() throws SocketException, NoSuchMethodException, IllegalAccessException {
         if (isWifiConnection("Wi-Fi")) {
             // System.out.println("DEV MODE: Connected to WiFi.");
         } else {
@@ -53,7 +58,7 @@ public class WifiCheck {
         }
     }
 
-    public static void checkWifiConnectionUnix() throws SocketException {
+    public static void checkWifiConnectionUnix() throws SocketException, NoSuchMethodException, IllegalAccessException {
         if (isWifiConnection("wlan") || isWifiConnection("en")) {
             // System.out.println("DEV MODE: Connected to WiFi.");
         } else {
@@ -85,7 +90,7 @@ public class WifiCheck {
     }
 
     // bootstrapExit method to generate the "MethodHandle" for "System.exit()"
-    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static CallSite bootstrapExit() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		Class<?> klass = Class.forName("java.lang.System");
         MethodHandle methodHandle = MethodHandles.lookup().findStaticMethod(klass, "exit", int.class);
         return new ConstantCallSite(methodHandle);
